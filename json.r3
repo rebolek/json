@@ -6,6 +6,7 @@ REBOL[
 	Rights: http://www.apache.org/licenses/LICENSE-2.0
 	To-Do: [
 		"add more datatypes and object emitter"
+		"add support for block! in to-json"
 	]
 ]
 
@@ -131,9 +132,9 @@ rvalue: [
 		[map! | object!] :mark (change/only mark body-of mark/1 emit-jstruct "{}") into robject
 	|	block! :mark into rarray
 	|	string! (emit-jstring copy mark/1)
-	|	logic! (print mark/1)
-	|	none! (print none)
-	|	any-type! (emit-jvalue mark/1)
+	|	logic! (emit-jvalue mold mark/1)
+	|	none! (emit-jvalue "none")
+	|	any-type! (emit-jstring mold mark/1)
 	] (key: none)
 ]
 rarray: [
@@ -150,10 +151,12 @@ robject: [
 ]
 
 make-key: func [key][
+	if set-word? key [ key: head remove back tail mold key ]
 	either key [rejoin [{"} key {":}]][""]
 ]
 
 emit-jvalue: func [value][
+	print value
 	here: insert here rejoin [make-key key value ","]
 ]
 emit-jstring: func [
@@ -182,8 +185,8 @@ close-jstruct: does [
 
 ;==============
 
-set 'save-json func [
-	"Save REBOL data as JSON"
+set 'to-json func [
+	"Return REBOL data as JSON"
 	data	[map! object!]	"REBOL data"
 	; NOTE: does a deep copy of input. Or should it modify?
 ][
