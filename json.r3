@@ -120,7 +120,7 @@ set 'load-json func [
 	type: either as-object [object!][map!]
 
 	unless parse/all data object [
-		print "WARNING!!! Parser returned FALSE."
+		make error! "This shouldn't happened. Parser returned FALSE."
 	]
 	first stack
 ]
@@ -156,7 +156,6 @@ make-key: func [key][
 ]
 
 emit-jvalue: func [value][
-	print value
 	here: insert here rejoin [make-key key value ","]
 ]
 emit-jstring: func [
