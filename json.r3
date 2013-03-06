@@ -151,7 +151,13 @@ robject: [
 ]
 
 make-key: func [key][
-	if set-word? key [ key: head remove back tail mold key ]
+	key: case [
+		set-word? key	[ head remove back tail mold key ]
+		none? key		[ key ]
+		not string? key	[ mold key ]
+		true			[ key ]
+	]
+	if key [ replace/all key #"-" #"_" ]
 	either key [rejoin [{"} key {":}]][""]
 ]
 
